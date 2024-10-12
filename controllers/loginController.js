@@ -1,5 +1,6 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const pool = require("../config/db");
 require("dotenv").config();
 
 const handleLogin = async (req, res) => {
@@ -22,10 +23,22 @@ const handleLogin = async (req, res) => {
     }
 
     //generate JWT Token
-    const token = jwt.sign({ user_id: user.rows[0].user_id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.json({ token });
+    const accessToken = jwt.sign(
+      { user_id: user.rows[0].user_id },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "15m",
+      }
+    );
+    // res.json({ accessToken });
+    const refreshToken = jwt.sign(
+      { user_id: user.rows[0].user_id },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+   res.json({ success: `user ${user.rows[0].username} is logged in` });
   } catch (error) {
     console.error(error.message);
     res.sendStatus(500); //server error

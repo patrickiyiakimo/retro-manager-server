@@ -1,13 +1,12 @@
 const express = require("express");
 const app = express();
-const cors = require("cors")
-const pool = require("./db")
+const cors = require("cors");
 const PORT = 2500;
 
+app.use(cors());
+app.use(express.json());
 
-//middleware
-app.use(cors())
-app.use(express(express.json()))
+app.use("/register", require("./routes/register"));
 
 app.get("/", (req, res) => {
   res.send("Hello from Express!");

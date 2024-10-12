@@ -3,8 +3,8 @@ const pool = require("../config/db");
 
 const handleNewUser = async (req, res) => {
   const { username, password, email } = req.body;
-  if (!username || !password || !email) {
-    return res.status(400).json({ message: "Username and password and email are required" });
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: "Username and email and password are required" });
     }
     
   //check if email already exist

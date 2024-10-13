@@ -1,12 +1,15 @@
 const bcrypt = require("bcrypt");
 const pool = require("../config/db");
+const { sendMail } = require("./mailSend");
+require("dotenv").config();
 
 const handleNewUser = async (req, res) => {
   const { username, password, email } = req.body;
+  //validate user
   if (!username || !email || !password) {
     return res.status(400).json({ message: "Username and email and password are required" });
-    }
-    
+  }
+
   //check if email already exist
   const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
   if (user.rows.length > 0) {
@@ -14,22 +17,25 @@ const handleNewUser = async (req, res) => {
   }
 
   try {
-      //hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
+    //hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      //insert the new user into the database
-      const newUser = await pool.query(
-        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
-        [username, email, hashedPassword]
-      );
+    //insert the new user into the database
+    const newUser = await pool.query(
+      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
+      [username, email, hashedPassword]
+    );
 
-      res.json(newUser.rows[0])
+    // Send a welcome email to the new user
+    const subject = "Welcome to Retro Manager";
+    const message = `Dear ${username},<br><br>Thank you for signing up to our platform! We're excited to have you on board.<br><br>Best regards, [RM]`;
+    sendMail(email, subject, message);
 
+    res.json(newUser.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.sendStatus(500); //server error
   }
-}
+};
 
-
-module.exports = {handleNewUser}
+module.exports = { handleNewUser };

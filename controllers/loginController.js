@@ -4,25 +4,26 @@ const pool = require("../config/db");
 require("dotenv").config();
 
 const handleLogin = async (req, res) => {
+  //validate user
   const { email, password } = req.body;
   if (!email || !password) {
-    res.status(400).json({ message: "email and password is required" });
+    return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
-    //check if users email exist
+    // Check if user's email exists
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     if (user.rows.length === 0) {
-      res.sendStatus(401); //unauthorised
+      return res.sendStatus(401); // Unauthorized
     }
 
-    //check if user password exist
+    // Check if user's password is valid
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
-    if (!password) {
-      res.sendStatus(401); //unauthorised
+    if (!validPassword) {
+      return res.sendStatus(401); // Unauthorized
     }
 
-    //generate JWT Token
+    // Generate JWT Tokens
     const accessToken = jwt.sign(
       { user_id: user.rows[0].user_id },
       process.env.ACCESS_TOKEN_SECRET,
@@ -30,18 +31,19 @@ const handleLogin = async (req, res) => {
         expiresIn: "15m",
       }
     );
-    // res.json({ accessToken });
+
     const refreshToken = jwt.sign(
       { user_id: user.rows[0].user_id },
-      process.env.ACCESS_TOKEN_SECRET,
+      process.env.REFRESH_TOKEN_SECRET, // Use separate secret for refresh token
       {
         expiresIn: "1d",
       }
     );
-   res.json({ success: `user ${user.rows[0].username} is logged in` });
+
+    return res.json({ success: `User  ${user.rows[0].username} is logged in` });
   } catch (error) {
     console.error(error.message);
-    res.sendStatus(500); //server error
+    return res.sendStatus(500); // Server error
   }
 };
 

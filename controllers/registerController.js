@@ -28,7 +28,7 @@ const handleNewUser = async (req, res) => {
 
     // Send a welcome email to the new user
     const subject = "Welcome to Retro Manager";
-    const message = `Dear ${username},<br><br>Thank you for signing up to our platform! We're excited to have you on board.<br><br>Best regards, [RM]`;
+    const message = `Dear ${username},<br><br>Thank you for signing up to our platform! We're excited to have you on board. Retro Manager is designed to help your team collaborate effectively and drive continuous improvement through agile retrospectives.<br><br>Best regards,  [RM]`;
     sendMail(email, subject, message);
 
     res.json(newUser.rows[0]);

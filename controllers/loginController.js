@@ -34,13 +34,13 @@ const handleLogin = async (req, res) => {
 
     const refreshToken = jwt.sign(
       { user_id: user.rows[0].user_id },
-      process.env.REFRESH_TOKEN_SECRET, // Use separate secret for refresh token
+      process.env.REFRESH_TOKEN_SECRET, 
       {
         expiresIn: "1d",
       }
     );
 
-    return res.json({ success: `User  ${user.rows[0].username} is logged in` });
+    return res.json({ success: `User ${user.rows[0].username} is logged in` });
   } catch (error) {
     console.error(error.message);
     return res.sendStatus(500); // Server error

@@ -10,17 +10,3 @@ router.put("/:standup_id", standupsControllers.updateStandup); // Update
 router.delete("/:standup_id", standupsControllers.deleteStandup); // Delete
 
 module.exports = router;
-
-
-// const express = require("express");
-// const router = express.Router();
-// const pool = require("../config/db");
-// const standupsControllers = require("../controllers/standupsControllers");
-
-// router.post("/", standupsControllers.newStandups); // Create
-// router.get("/", standupsControllers.standups); // Read
-// router.get("/:id", standupsControllers.getStandup); // Read one
-// router.patch("/:id", standupsControllers.updateStandup); // Update
-// router.delete("/:id", standupsControllers.deleteStandup); // Delete
-
-// module.exports = router;

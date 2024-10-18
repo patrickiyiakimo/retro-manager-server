@@ -1,19 +1,20 @@
-require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { v4: uuidv4 } = require("uuid");
 const PORT = 2500;
 
 app.use(express.json());
 app.use(cors());
 
 // Routes
-app.use("/register", require("./routes/register")); // Assuming you have this route
-app.use("/login", require("./routes/login")); // Assuming you have this route
-app.use("/standups", require("./routes/standups")); // Correct import for standups
+app.use("/register", require("./routes/register")); // route for user signup
+app.use("/login", require("./routes/login")); // route to login users
+app.use("/standups", require("./routes/standups")); // route for standups
+app.use("/invites", require("./routes/invites")); // Corrected the import
 
 app.get("/", (req, res) => {
-  res.send("Hello from Express!");
+  res.send("Hello from Retro Manager!");
 });
 
 app.listen(PORT, () => {

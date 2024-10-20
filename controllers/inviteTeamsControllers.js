@@ -18,10 +18,10 @@ const transporter = nodemailer.createTransport({
 
 // Create an invitation
 const invite_team = async (req, res) => {
-  const teamId = req.body.teamId;
-  const invitedEmail = req.body.invitedEmail;
-  const invitedBy = req.user.id;
-  const uuid = uuidv4();
+   const teamId = req.body.teamId;
+   const invitedEmail = req.body.invitedEmail;
+   const invitedBy = req.user.id;
+   const uuid = req.body.uuid || uuidv4();
 
   // Send an email invite to the invited user
   const mailOptions = {
@@ -48,6 +48,17 @@ const invite_team = async (req, res) => {
   ]);
   res.json({ message: "Invitation sent successfully" });
 };
+
+//generate uuid 
+const generate_uuid = async (req, res) => {
+  try {
+    const uuid = uuidv4()
+    res.json({uuid})
+  } catch (error) {
+    console.error(error.message)
+    res.sendStatus(500)//Bad request
+  }
+}
 
 // Get all invitations
 const get_invitations = async (req, res) => {
@@ -107,6 +118,7 @@ const delete_invitation = async (req, res) => {
 module.exports = {
   invite_team,
   get_invitations,
+  generate_uuid,
   accept_invitation,
   decline_invitation,
   delete_invitation,

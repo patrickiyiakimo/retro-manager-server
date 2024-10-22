@@ -25,6 +25,14 @@ CREATE TABLE inviteteams(
     FOREIGN KEY (invited_by) REFERENCES users (user_id)
 );
 
+CREATE TABLE dashboard (
+    dashboard_id BIGSERIAL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    participants_count INT DEFAULT 0,
+    creator_id BIGINT NOT NULL, 
+    FOREIGN KEY (creator_id) REFERENCES users(user_id) ON DELETE CASCADE 
+);
+
 CREATE TABLE standups(
     standup_id BIGSERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(user_id),

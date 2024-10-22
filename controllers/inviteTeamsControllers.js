@@ -18,10 +18,11 @@ const transporter = nodemailer.createTransport({
 
 // Create an invitation
 const invite_team = async (req, res) => {
-   const teamId = req.body.teamId;
-   const invitedEmail = req.body.invitedEmail;
-   const invitedBy = req.user.id;
-   const uuid = req.body.uuid || uuidv4();
+  const teamId = req.body.teamId;
+  const invitedEmail = req.body.invitedEmail;
+  const invitedBy = req.user.id;
+  const uuid = req.body.uuid || uuidv4();
+  const dashboardId = req.body
 
   // Send an email invite to the invited user
   const mailOptions = {
@@ -41,12 +42,40 @@ const invite_team = async (req, res) => {
   });
 
   // Creating an invitation in the database
-  await pool.query("INSERT INTO inviteteams (team_id, invited_email, uuid) VALUES ($1, $2, $3)", [
-    teamId,
-    invitedEmail,
-    uuid,
-  ]);
-  res.json({ message: "Invitation sent successfully" });
+  // await pool.query("INSERT INTO inviteteams (team_id, invited_email, uuid) VALUES ($1, $2, $3)", [
+  //   teamId,
+  //   invitedEmail,
+  //   uuid,
+  // ]);
+  // res.json({ message: "Invitation sent successfully" });
+
+  // Assuming you have the necessary variables defined
+  // const { teamId, invitedEmail, invitedBy, dashboardId } = req.body; // Make sure to get invitedBy and dashboardId from the request body
+
+  try {
+    await pool.query("BEGIN");
+
+    await pool.query(
+      "INSERT INTO inviteteams (team_id, invited_by, invited_email, uuid) VALUES ($1, $2, $3, $4)",
+      [teamId, invitedBy, invitedEmail, uuid]
+    );
+
+    await pool.query(
+      "UPDATE dashboard SET participants_count = participants_count + 1 WHERE dashboard_id = $1",
+      [dashboardId]
+    );
+
+    // Commit the transaction
+    await pool.query("COMMIT");
+
+    // Send success response
+    res.json({ message: "Invitation sent successfully" });
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await pool.query("ROLLBACK");
+    console.error("Error sending invitation:", error);
+    res.status(500).json({ message: "Error sending invitation" });
+  }
 };
 
 //generate uuid 
@@ -61,12 +90,50 @@ const generate_uuid = async (req, res) => {
 }
 
 // Get all invitations
+
+
+// const get_invitations = async (req, res) => {
+//   try {
+//     const { teamId } = req.query;
+
+//     const invitations = await pool.query("SELECT * FROM inviteteams WHERE team_id = $1", [teamId]);
+//     res.json(invitations.rows);
+//   } catch (error) {
+//     console.error(error.message);
+//     res.sendStatus(500); // Bad request
+//   }
+// };
+
+
 const get_invitations = async (req, res) => {
   try {
     const { teamId } = req.query;
 
     const invitations = await pool.query("SELECT * FROM inviteteams WHERE team_id = $1", [teamId]);
-    res.json(invitations.rows);
+
+    const formattedInvitations = invitations.rows.map((invitation) => {
+      const invitedAt = new Date(invitation.invited_at);
+      const now = new Date();
+      let dateMessage;
+
+      // Checking if the invitation was made today or yesterday
+      if (invitedAt.toDateString() === now.toDateString()) {
+        dateMessage = "Today";
+      } else if (
+        invitedAt.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString()
+      ) {
+        dateMessage = "Yesterday";
+      } else {
+        dateMessage = invitedAt.toLocaleDateString();
+      }
+
+      return {
+        ...invitation,
+        dateMessage, // Add the formatted date message
+      };
+    });
+
+    res.json(formattedInvitations);
   } catch (error) {
     console.error(error.message);
     res.sendStatus(500); // Bad request

@@ -26,9 +26,8 @@ CREATE TABLE inviteteams(
 );
 
 CREATE TABLE dashboard (
-   
     dashboard_id BIGSERIAL PRIMARY KEY,
-     team_name VARCHAR(255) NOT NULL,
+   ALTER TABLE dashboard ADD COLUMN team_name VARCHAR(255);
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     participants_count INT DEFAULT 0,
     creator_id BIGINT NOT NULL, 

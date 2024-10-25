@@ -41,25 +41,22 @@ const invite_team = async (req, res) => {
     }
   });
 
-  // Creating an invitation in the database
-  // await pool.query("INSERT INTO inviteteams (team_id, invited_email, uuid) VALUES ($1, $2, $3)", [
-  //   teamId,
-  //   invitedEmail,
-  //   uuid,
-  // ]);
-  // res.json({ message: "Invitation sent successfully" });
-
-  // Assuming you have the necessary variables defined
-  // const { teamId, invitedEmail, invitedBy, dashboardId } = req.body; // Make sure to get invitedBy and dashboardId from the request body
+   
+   // Input validation
+   if (!teamId || !invitedBy || !invitedEmail || !uuid || !dashboardId) {
+     return res.status(400).json({ message: "All fields are required." });
+   }
 
   try {
     await pool.query("BEGIN");
 
+    // Insert the invitation into the inviteteams table
     await pool.query(
       "INSERT INTO inviteteams (team_id, invited_by, invited_email, uuid) VALUES ($1, $2, $3, $4)",
       [teamId, invitedBy, invitedEmail, uuid]
     );
 
+    // Update the participants count in the dashboard
     await pool.query(
       "UPDATE dashboard SET participants_count = participants_count + 1 WHERE dashboard_id = $1",
       [dashboardId]
@@ -69,10 +66,15 @@ const invite_team = async (req, res) => {
     await pool.query("COMMIT");
 
     // Send success response
-    res.json({ message: "Invitation sent successfully" });
+    res.status(201).json({ message: "Invitation sent successfully" });
   } catch (error) {
     // Rollback the transaction in case of error
-    await pool.query("ROLLBACK");
+    try {
+      await pool.query("ROLLBACK");
+    } catch (rollbackError) {
+      console.error("Rollback error:", rollbackError);
+    }
+
     console.error("Error sending invitation:", error);
     res.status(500).json({ message: "Error sending invitation" });
   }
@@ -88,22 +90,6 @@ const generate_uuid = async (req, res) => {
     res.sendStatus(500)//Bad request
   }
 }
-
-// Get all invitations
-
-
-// const get_invitations = async (req, res) => {
-//   try {
-//     const { teamId } = req.query;
-
-//     const invitations = await pool.query("SELECT * FROM inviteteams WHERE team_id = $1", [teamId]);
-//     res.json(invitations.rows);
-//   } catch (error) {
-//     console.error(error.message);
-//     res.sendStatus(500); // Bad request
-//   }
-// };
-
 
 const get_invitations = async (req, res) => {
   try {

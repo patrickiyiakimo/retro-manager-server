@@ -43,7 +43,7 @@ const invite_team = async (req, res) => {
 
    
    // Input validation
-   if (!teamId || !invitedBy || !invitedEmail || !uuid || !dashboardId) {
+   if ( !invitedEmail || !uuid || !dashboardId) {
      return res.status(400).json({ message: "All fields are required." });
    }
 
@@ -52,8 +52,8 @@ const invite_team = async (req, res) => {
 
     // Insert the invitation into the inviteteams table
     await pool.query(
-      "INSERT INTO inviteteams (team_id, invited_by, invited_email, uuid) VALUES ($1, $2, $3, $4)",
-      [teamId, invitedBy, invitedEmail, uuid]
+      "INSERT INTO inviteteams ( invited_email, uuid) VALUES ($1, $2)",
+      [invitedEmail, uuid]
     );
 
     // Update the participants count in the dashboard
@@ -158,7 +158,7 @@ const decline_invitation = async (req, res) => {
 const delete_invitation = async (req, res) => {
   try {
     const { uuid } = req.body;
-
+algorhythm
     // Delete the invitation from the database
     await pool.query("DELETE FROM inviteteams WHERE uuid = $1", [uuid]);
     res.json({ message: "Invitation deleted successfully" });

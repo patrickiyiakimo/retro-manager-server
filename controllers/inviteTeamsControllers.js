@@ -43,7 +43,7 @@ const invite_team = async (req, res) => {
 
    
    // Input validation
-   if ( !invitedEmail || !uuid || !dashboardId) {
+   if ( !invitedEmail || !uuid ) {
      return res.status(400).json({ message: "All fields are required." });
    }
 
@@ -80,16 +80,7 @@ const invite_team = async (req, res) => {
   }
 };
 
-//generate uuid 
-const generate_uuid = async (req, res) => {
-  try {
-    const uuid = uuidv4()
-    res.json({uuid})
-  } catch (error) {
-    console.error(error.message)
-    res.sendStatus(500)//Bad request
-  }
-}
+
 
 const get_invitations = async (req, res) => {
   try {
@@ -171,7 +162,6 @@ algorhythm
 module.exports = {
   invite_team,
   get_invitations,
-  generate_uuid,
   accept_invitation,
   decline_invitation,
   delete_invitation,

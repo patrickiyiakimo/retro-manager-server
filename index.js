@@ -8,11 +8,12 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
-app.use("/register", require("./routes/register")); // route for user signup
-app.use("/login", require("./routes/login")); // route to login users
-app.use("/standups", require("./routes/standups")); // route for standups
-app.use("/invites", require("./routes/invites")); // route for team invite
-app.use("/dashboard", require("./routes/dashboard")); //route for dashboard
+app.use("/register", require("./routes/register")); 
+app.use("/login", require("./routes/login")); 
+app.use("/standups", require("./routes/standups")); 
+app.use("/invites", require("./routes/invites")); 
+app.use("/dashboard", require("./routes/dashboard")); 
+app.use("/generateId", require("./routes/generateId"))
 
 app.get("/", (req, res) => {
   res.send("Hello from Retro Manager!");

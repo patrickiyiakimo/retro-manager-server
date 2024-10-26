@@ -20,7 +20,6 @@ const transporter = nodemailer.createTransport({
 const invite_team = async (req, res) => {
   const teamId = req.body.teamId;
   const invitedEmail = req.body.invitedEmail;
-  const invitedBy = req.user.id;
   const uuid = req.body.uuid || uuidv4();
   const dashboardId = req.body
 

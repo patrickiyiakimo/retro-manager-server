@@ -15,8 +15,6 @@ CREATE TABLE teams(
 
 CREATE TABLE inviteteams(
     invite_id BIGSERIAL PRIMARY KEY,
-    team_id INTEGER NOT NULL,
-    invited_by INTEGER NOT NULL,
     invited_email VARCHAR(255) NOT NULL,
     invited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) NOT NULL DEFAULT 'pending',

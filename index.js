@@ -6,27 +6,17 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 2500;
 
-
+// Apply CORS middleware
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
-
-app.use(express.json());
-
-// Handle preflight requests explicitly
-app.options(
-  "*",
-  cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3000", // Set specific origin for development
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+app.use(express.json());
 
 // Routes
 app.use("/register", require("./routes/register"));
@@ -46,6 +36,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`Express server running at http://localhost:${PORT}/`);
 });

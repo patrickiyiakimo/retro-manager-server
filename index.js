@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 2500;
 // Apply CORS middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // Set specific origin for development
+    origin: "http://localhost:3000", 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

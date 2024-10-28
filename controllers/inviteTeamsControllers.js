@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 const { v4: uuidv4 } = require("uuid");
-// const { invitedEmail } = req.body;
-  const dashboardId = "0";
+const dashboardId = "0";
 const nodemailer = require("nodemailer");
 
 // Create a transporter object
@@ -19,14 +18,11 @@ const transporter = nodemailer.createTransport({
 
 // Create an invitation
 const invite_team = async (req, res) => {
-  const { invitedEmail } = req.body; // Destructure invitedEmail from req.body
-  const uuid = req.body.uuid; // Generate a UUID if not provided
+  const { invitedEmail } = req.body;
+  const uuid = req.body.uuid;
 
   // Input validation
-  if (!invitedEmail || !uuid) {
-    // Check if all required fields are present
-    return res.status(400).json({ message: "All fields are required." });
-  }
+  if (!invitedEmail || !uuid) return res.status(400).json({ message: "All fields are required." });
 
   // Send an email invite to the invited user
   const mailOptions = {
@@ -39,7 +35,7 @@ const invite_team = async (req, res) => {
   try {
     // Send the email
     await transporter.sendMail(mailOptions);
-    console.log("Email Sent:" ,"Email sent successfully ");
+    console.log("Email Sent:", "Email sent successfully ");
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Error sending email" });
@@ -48,26 +44,21 @@ const invite_team = async (req, res) => {
   try {
     await pool.query("BEGIN");
 
-    // Insert the invitation into the inviteteams table
     await pool.query(
-      "INSERT INTO inviteteams (invited_email, uuid) VALUES ($1, $2)", // Removed team_id from the insert
+      "INSERT INTO inviteteams (invited_email, uuid) VALUES ($1, $2)",
       [invitedEmail, uuid]
     );
 
-    // Update the participants count in the dashboard
-    // Ensure you have a valid dashboardId if needed
     await pool.query(
       "UPDATE dashboard SET participants_count = participants_count + 1 WHERE dashboard_id = $1",
-      [dashboardId] // Make sure dashboardId is defined correctly if you are using it
+      [dashboardId] 
     );
 
-    // Commit the transaction
     await pool.query("COMMIT");
 
-    // Send success response
     res.status(201).json({ message: "Invitation sent successfully" });
   } catch (error) {
-    // Rollback the transaction in case of error
+ 
     try {
       await pool.query("ROLLBACK");
     } catch (rollbackError) {
@@ -78,8 +69,6 @@ const invite_team = async (req, res) => {
     res.status(500).json({ message: "Error sending invitation" });
   }
 };
-
-
 
 const get_invitations = async (req, res) => {
   try {
@@ -105,7 +94,7 @@ const get_invitations = async (req, res) => {
 
       return {
         ...invitation,
-        dateMessage, // Add the formatted date message
+        dateMessage, 
       };
     });
 
@@ -121,7 +110,6 @@ const accept_invitation = async (req, res) => {
   try {
     const uuid = req.body.uuid;
 
-    // Update the invitation status in the database
     await pool.query("UPDATE inviteteams SET status = 'accepted' WHERE uuid = $1", [uuid]);
     res.json({ message: "Invitation accepted successfully" });
   } catch (error) {
@@ -135,7 +123,6 @@ const decline_invitation = async (req, res) => {
   try {
     const uuid = req.body.uuid;
 
-    // Update the invitation status in the database
     await pool.query("UPDATE inviteteams SET status = 'declined' WHERE uuid = $1", [uuid]);
     res.json({ message: "Invitation declined successfully" });
   } catch (error) {
@@ -148,8 +135,7 @@ const decline_invitation = async (req, res) => {
 const delete_invitation = async (req, res) => {
   try {
     const { uuid } = req.body;
-    algorhythm;
-    // Delete the invitation from the database
+
     await pool.query("DELETE FROM inviteteams WHERE uuid = $1", [uuid]);
     res.json({ message: "Invitation deleted successfully" });
   } catch (error) {

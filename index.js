@@ -6,17 +6,16 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 2500;
 
-app.use(express.json());
 
-// Configure CORS to include specific origin and headers
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow specific origin
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"], // Include additional headers as necessary
-    credentials: true, // If using cookies or credentials, set this to true
+    allowedHeaders: ["Content-Type"],
   })
 );
+
+app.use(express.json());
 
 // Handle preflight requests explicitly
 app.options(

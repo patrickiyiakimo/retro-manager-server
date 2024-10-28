@@ -1,24 +1,33 @@
 const express = require("express");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
-require("dotenv").config(); // Load environment variables from .env file
+require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 2500; // Use PORT from environment variable or default to 2500
+const PORT = process.env.PORT || 2500;
 
 app.use(express.json());
 
-// Configure CORS
+// Configure CORS to include specific origin and headers
 app.use(
   cors({
-    origin: "http://localhost:3000", // Specify the origin
+    origin: "http://localhost:3000", // Allow specific origin
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type", "Authorization"], // Include additional headers as necessary
+    credentials: true, // If using cookies or credentials, set this to true
   })
 );
 
-// Handle preflight requests for all routes
-app.options("*", cors());
+// Handle preflight requests explicitly
+app.options(
+  "*",
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 // Routes
 app.use("/register", require("./routes/register"));

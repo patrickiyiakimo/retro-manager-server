@@ -3,7 +3,6 @@ require("dotenv").config();
 
 const getAllDashboard = async (req, res) => {
   try {
-    // Query to select all dashboards
     const allDashboard = await pool.query("SELECT * FROM dashboard");
 
     res.json(allDashboard.rows);
@@ -34,7 +33,7 @@ const delete_dashboard = async (req, res) => {
 
     const del = await pool.query("DELETE FROM dashboard WHERE dashboard_id = $1", [dashboard_id]);
 
-    // You might want to check if any rows were affected
+    // checking if any rows were affected
     if (del.rowCount === 0) {
       return res.status(404).json({ message: "Dashboard not found" });
     }

@@ -6,15 +6,28 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 2500;
 
-// Apply CORS middleware
-app.use(
-  cors({
-    origin: "http://localhost:3000", 
-    // methods: ["GET", "POST", "PUT", "DELETE"],
-    // allowedHeaders: ["Content-Type", "Authorization"],
-    // credentials: true,
-  })
-);
+// // Apply CORS middleware
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000", 
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   })
+// );
+
+// Basic CORS setup: allow all origins
+app.use(cors());
+
+// Optional: For custom CORS options
+const corsOptions = {
+  origin: "http://localhost:3000", // Specify allowed origin(s)
+  methods: "GET,POST,PUT,DELETE", // Specify allowed HTTP methods
+  allowedHeaders: "Content-Type,Authorization", // Specify allowed headers
+};
+
+// Use CORS with options
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
